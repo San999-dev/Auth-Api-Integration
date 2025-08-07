@@ -1,37 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login</title>
-  <link rel="stylesheet" href="css/styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Example</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="toggle-theme">
-    <label>
-      <input type="checkbox" id="darkModeToggle" />
-      Dark Mode
-    </label>
-  </div>
 
-  <div class="container">
-    <h2>Login</h2>
-    <form id="login-form">
-      <label>Email:</label>
-      <input type="email" id="email" required />
+    <div id="app">
+        <div id="login-form" class="form-container">
+            <h2>Login</h2>
+            <form onsubmit="handleLogin(event)">
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+        </div>
 
-      <label>Password:</label>
-      <div class="password-wrapper">
-        <input type="password" id="password" required />
-        <button type="button" id="togglePassword">👁️</button>
-      </div>
+        <div id="welcome-screen" class="form-container" style="display: none;">
+            <h2>Welcome, <span id="user-name"></span></h2>
+            <button onclick="handleLogout()">Logout</button>
+        </div>
+    </div>
 
-      <button type="submit">Login</button>
-    </form>
-    <p id="error-msg"></p>
-  </div>
-
-  <script src="js/login.js"></script>
-  <script src="js/ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
