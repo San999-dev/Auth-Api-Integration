@@ -1,22 +1,21 @@
-document.getElementById("login-form").addEventListener("submit", async (e) => {
+document.getElementById('login-form').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const errorMsg = document.getElementById("error-msg");
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
 
   try {
-    const res = await fetch("https://os-project-server.vercel.app/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+    const response = await fetch('https://os-project-server.vercel.app/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
     });
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || "Login failed");
+    if (!response.ok) throw new Error('Invalid credentials');
 
-    localStorage.setItem("token", data.token);
-    window.location.href = "welcome.html";
+    const data = await response.json();
+    localStorage.setItem('authToken', data.token);
+    window.location.href = 'welcome.html';
   } catch (err) {
-    errorMsg.textContent = err.message;
+    document.getElementById('error-msg').textContent = 'Login failed. Please try again.';
   }
 });
