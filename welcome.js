@@ -1,15 +1,16 @@
-document.addEventListener('DOMContentLoaded', function() {
-  const token = localStorage.getItem('authToken');
-  if (!token) {
-    window.location.href = 'login.html';
-    return;
+function logout() {
+  localStorage.removeItem("token");
+  window.location.href = "index.html";
+}
+
+(function () {
+  const token = localStorage.getItem("token");
+  if (!token) return (window.location.href = "index.html");
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    document.getElementById("user-info").textContent = `Hello, ${payload.email}`;
+  } catch {
+    logout();
   }
-
-  const payload = JSON.parse(atob(token.split('.')[1]));
-  document.getElementById('user-info').textContent = `Hello, ${payload.name || payload.email || 'User'}!`;
-
-  document.getElementById('logout-btn').addEventListener('click', function() {
-    localStorage.removeItem('authToken');
-    window.location.href = 'login.html';
-  });
-});
+})();
