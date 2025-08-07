@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authentication Example</title>
+    <title>Authentication App</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -14,18 +14,17 @@
             <h2>Login</h2>
             <form onsubmit="handleLogin(event)">
                 <input type="email" id="email" placeholder="Email" required>
-                <input type="password" id="password" placeholder="Password" required>
+                <div class="password-container">
+                    <input type="password" id="password" placeholder="Password" required>
+                    <span id="toggle-password" class="toggle-password" onclick="togglePasswordVisibility()">🙈</span>
+                </div>
                 <button type="submit">Login</button>
             </form>
-        </div>
-
-        <div id="welcome-screen" class="form-container" style="display: none;">
-            <h2>Welcome, <span id="user-name"></span></h2>
-            <button onclick="handleLogout()">Logout</button>
+            <p><a href="#" onclick="showForgotPassword()">Forgot Password?</a></p>
+            <p>Don't have an account? <a href="#" onclick="showRegistration()">Register</a></p>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
