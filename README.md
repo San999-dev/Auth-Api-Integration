@@ -16,7 +16,7 @@ Project Features
 🔗 API Details
 Base URL:
 
-https://os-project-server.vercel.app/
+
 
 Login Endpoint:
 
