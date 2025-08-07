@@ -1,4 +1,4 @@
-function handleLogin(event) {
+async function handleLogin(event) {
     event.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
@@ -8,24 +8,26 @@ function handleLogin(event) {
         return;
     }
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://os-project-server.vercel.app/api/auth/login', true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
+    try {
+        const response = await fetch('https://os-project-server.vercel.app/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+        });
 
-    xhr.onload = function() {
-        if (xhr.status >= 200 && xhr.status < 300) {
-            const data = JSON.parse(xhr.responseText);
-            localStorage.setItem('token', data.token); // Store the token
-            showDashboard(); // Show the dashboard after successful login
-        } else {
-            const errorData = JSON.parse(xhr.responseText);
+        if (!response.ok) {
+            const errorData = await response.json();
             alert('Login failed: ' + (errorData.message || 'Unknown error'));
+            return;
         }
-    };
 
-    xhr.onerror = function() {
-        alert('An error occurred while logging in. Please try again later.');
-    };
-
-    xhr.send(JSON.stringify({ email, password }));
+        const data = await response.json();
+        localStorage.setItem('token', data.token); // Store the token
+        showDashboard(); // Show the dashboard after successful login
+    } catch (error) {
+        alert('Login failed: ' + error.message);
+        console.error('Login error:', error);
+    }
 }
