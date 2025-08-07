@@ -1,7 +1,15 @@
 async function handleLogin(event) {
     event.preventDefault();
+    
+    // Get the values from the input fields
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+
+    // Validate input fields
+    if (!email || !password) {
+        alert('Please enter both email and password.');
+        return;
+    }
 
     try {
         const response = await fetch('https://os-project-server.vercel.app/api/auth/login', {
@@ -23,7 +31,7 @@ async function handleLogin(event) {
         showDashboard(); // Show the dashboard after successful login
     } catch (error) {
         alert('An error occurred while logging in. Please try again later.');
-        console.error(error);
+        console.error('Login error:', error); // Log the error for debugging
     }
 }
 
@@ -55,7 +63,7 @@ function showDashboard() {
     const token = localStorage.getItem('token');
     if (token) {
         const decoded = jwt_decode(token);
-        document.getElementById('user-name').innerText = decoded.name || 'User ';
+        document.getElementById('user-name').innerText = decoded.name || 'User  ';
         document.getElementById('login-form').style.display = 'none';
         document.getElementById('registration-form').style.display = 'none';
         document.getElementById('forgot-password-form').style.display = 'none';
@@ -73,35 +81,3 @@ function handleLogout() {
 window.onload = function() {
     showLogin(); // Show the login form by default
 };
-async function handleLogin(event) {
-    event.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    try {
-        const response = await fetch('https://os-project-server.vercel.app/api/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            alert(`Login failed: ${errorData.message || 'Unknown error'}`);
-            return;
-        }
-
-        const data = await response.json();
-        localStorage.setItem('token', data.token); // Store the token
-        showDashboard(); // Show the dashboard after successful login
-    } catch (error) {
-        alert('An error occurred while logging in. Please try again later.');
-        console.error('Login error:', error); // Log the error for debugging
-    }
-}
-if (!email || !password) {
-    alert('Please enter both email and password.');
-    return;
-}
