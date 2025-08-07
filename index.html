@@ -96,6 +96,7 @@
           <span onclick="togglePassword('login-password', this)">Show</span>
         </div>
         <button type="submit">Login</button>
+        <p><a onclick="switchScreen('forgot')">Forgot Password?</a></p>
         <p><a onclick="switchScreen('register')">Don't have an account? Register</a></p>
       </form>
     </section>
@@ -112,6 +113,16 @@
         </div>
         <button type="submit">Register</button>
         <p><a onclick="switchScreen('login')">Already have an account? Login</a></p>
+      </form>
+    </section>
+
+    <!-- FORGOT PASSWORD -->
+    <section id="forgot" class="screen">
+      <h2>Forgot Password</h2>
+      <form id="forgot-form">
+        <input type="email" id="forgot-email" placeholder="Enter your registered email" required />
+        <button type="submit">Recover Password</button>
+        <p><a onclick="switchScreen('login')">Back to Login</a></p>
       </form>
     </section>
 
@@ -155,7 +166,12 @@
       return users.find(u => u.email === email && u.password === password);
     };
 
-    // Register Form
+    const findUserByEmail = (email) => {
+      const users = getUsers();
+      return users.find(u => u.email === email);
+    };
+
+    // Register
     document.getElementById("register-form").addEventListener("submit", function(e) {
       e.preventDefault();
       const name = document.getElementById("register-name").value;
@@ -170,7 +186,7 @@
       switchScreen("login");
     });
 
-    // Login Form
+    // Login
     document.getElementById("login-form").addEventListener("submit", function(e) {
       e.preventDefault();
       const email = document.getElementById("login-email").value;
@@ -186,12 +202,25 @@
       }
     });
 
+    // Forgot Password
+    document.getElementById("forgot-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const email = document.getElementById("forgot-email").value;
+      const user = findUserByEmail(email);
+      if (!user) {
+        alert("No account found with this email.");
+      } else {
+        alert(`Your password is: ${user.password}`);
+        switchScreen("login");
+      }
+    });
+
     const logout = () => {
       localStorage.removeItem("currentUser");
       switchScreen("login");
     };
 
-    // Auto-login if already logged in
+    // Auto-login
     window.onload = () => {
       const user = JSON.parse(localStorage.getItem("currentUser"));
       if (user) {
