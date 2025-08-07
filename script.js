@@ -1,82 +1,66 @@
-async function handleLogin(event) {
-    event.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+// Authentication App using Fetch API
 
-    // Validate input fields
-    if (!email || !password) {
-        alert('Please enter both email and password.');
-        return;
-    }
+// Function to handle user login
+function loginUser (username, password) {
+  const url = "https://example.com/api/login"; // Replace with your API endpoint
 
-    try {
-        const response = await fetch('https://os-project-server.vercel.app/api/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-        });
-
-        // Check if the response is ok (status in the range 200-299)
-        if (!response.ok) {
-            const errorData = await response.json();
-            alert('Login failed: ' + (errorData.message || 'Unknown error'));
-            return;
-        }
-
-        const data = await response.json();
-        localStorage.setItem('token', data.token); // Store the token
-        showDashboard(); // Show the dashboard after successful login
-    } catch (error) {
-        alert('Login failed: ' + error.message);
-        console.error('Login error:', error);
-    }
+  fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ username, password })
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok " + response.statusText);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("Login successful:", data);
+      // Handle successful login (e.g., redirect or store token)
+    })
+    .catch(error => {
+      console.error("There was a problem with the fetch operation:", error);
+    });
 }
 
-function showLogin() {
-    document.getElementById('login-form').style.display = 'block';
-    document.getElementById('registration-form').style.display = 'none';
-    document.getElementById('forgot-password-form').style.display = 'none';
-    document.getElementById('change-password-form').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'none';
+// Function to handle user registration
+function registerUser (username, password) {
+  const url = "https://example.com/api/register"; // Replace with your API endpoint
+
+  fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ username, password })
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok " + response.statusText);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("Registration successful:", data);
+      // Handle successful registration (e.g., redirect to login)
+    })
+    .catch(error => {
+      console.error("There was a problem with the fetch operation:", error);
+    });
 }
 
-function showRegistration() {
-    document.getElementById('registration-form').style.display = 'block';
-    document.getElementById('login-form').style.display = 'none';
-    document.getElementById('forgot-password-form').style.display = 'none';
-    document.getElementById('change-password-form').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'none';
-}
+// Example usage
+document.getElementById("loginButton").addEventListener("click", function() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  loginUser (username, password);
+});
 
-function showForgotPassword() {
-    document.getElementById('forgot-password-form').style.display = 'block';
-    document.getElementById('login-form').style.display = 'none';
-    document.getElementById('registration-form').style.display = 'none';
-    document.getElementById('change-password-form').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'none';
-}
-
-function showDashboard() {
-    const token = localStorage.getItem('token');
-    if (token) {
-        const decoded = jwt_decode(token);
-        document.getElementById('user-name').innerText = decoded.name || 'User  ';
-        document.getElementById('login-form').style.display = 'none';
-        document.getElementById('registration-form').style.display = 'none';
-        document.getElementById('forgot-password-form').style.display = 'none';
-        document.getElementById('change-password-form').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'block'; // Show the dashboard
-    }
-}
-
-function handleLogout() {
-    localStorage.removeItem('token');
-    showLogin(); // Show the login form after logout
-}
-
-// Call showLogin on page load
-window.onload = function() {
-    showLogin(); // Show the login form by default
-};
+document.getElementById("registerButton").addEventListener("click", function() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  registerUser (username, password);
+});
