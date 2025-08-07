@@ -1,25 +1,23 @@
-function showLogin() {
-    document.getElementById('login-form').style.display = 'block';
-    document.getElementById('registration-form').style.display = 'none';
-    document.getElementById('forgot-password-form').style.display = 'none';
-    document.getElementById('change-password-form').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'none';
-}
+async function handleLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
-function showRegistration() {
-    document.getElementById('registration-form').style.display = 'block';
-    document.getElementById('login-form').style.display = 'none';
-    document.getElementById('forgot-password-form').style.display = 'none';
-    document.getElementById('change-password-form').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'none';
-}
+    const response = await fetch('https://os-project-server.vercel.app/api/auth/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+    });
 
-function showForgotPassword() {
-    document.getElementById('forgot-password-form').style.display = 'block';
-    document.getElementById('login-form').style.display = 'none';
-    document.getElementById('registration-form').style.display = 'none';
-    document.getElementById('change-password-form').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'none';
+    if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('token', data.token); // Store the token
+        showDashboard(); // Show the dashboard after successful login
+    } else {
+        alert('Login failed. Please check your credentials.');
+    }
 }
 
 function showDashboard() {
@@ -31,20 +29,21 @@ function showDashboard() {
         document.getElementById('registration-form').style.display = 'none';
         document.getElementById('forgot-password-form').style.display = 'none';
         document.getElementById('change-password-form').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'block';
+        document.getElementById('dashboard').style.display = 'block'; // Show the dashboard
     }
 }
 
 function handleLogout() {
     localStorage.removeItem('token');
-    showLogin();
+    showLogin(); // Show the login form after logout
 }
 
-function togglePasswordVisibility() {
-    const passwordInput = document.getElementById('password');
-    const togglePasswordIcon = document.getElementById('toggle-password');
-    passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
-    togglePasswordIcon.innerText = passwordInput.type === 'password' ? '🙈' : '👁️';
+function showLogin() {
+    document.getElementById('login-form').style.display = 'block';
+    document.getElementById('registration-form').style.display = 'none';
+    document.getElementById('forgot-password-form').style.display = 'none';
+    document.getElementById('change-password-form').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'none';
 }
 
-// Add your handleLogin, handleRegistration, handleForgotPassword, and handleChangePassword functions here
+// Other functions (showRegistration, showForgotPassword, etc.) remain the same
