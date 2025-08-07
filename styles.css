@@ -30,6 +30,11 @@ body {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.form-container:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7);
+}
+
 h2 {
     margin-bottom: 20px;
     font-weight: 700;
@@ -87,4 +92,8 @@ button:hover {
     cursor: pointer;
     font-size: 1.2em; /* Adjust size as needed */
     color: #ccc; /* Optional: Change color for better visibility */
+}
+
+#user-name {
+    font-weight: bold;
 }
