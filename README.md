@@ -22,7 +22,8 @@ Login Endpoint:
 
 POST /auth/login
 
-#🧪 How It Works
+🧪 How It Works
+
 1.User enters email and password on the login page.
 
 2.On submit, the login form sends a POST request to the external API.
