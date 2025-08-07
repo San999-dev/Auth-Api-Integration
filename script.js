@@ -3,6 +3,7 @@ async function handleLogin(event) {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
+    // Validate input fields
     if (!email || !password) {
         alert('Please enter both email and password.');
         return;
@@ -14,10 +15,11 @@ async function handleLogin(event) {
             password
         });
 
-        localStorage.setItem('token', response.data.token); // Store the token
+        // Store the token in local storage
+        localStorage.setItem('token', response.data.token);
         showDashboard(); // Show the dashboard after successful login
     } catch (error) {
-        // Check if the error response exists
+        // Improved error handling
         if (error.response) {
             // The request was made and the server responded with a status code
             alert('Login failed: ' + (error.response.data.message || 'Unknown error'));
@@ -62,7 +64,7 @@ function showDashboard() {
     const token = localStorage.getItem('token');
     if (token) {
         const decoded = jwt_decode(token);
-        document.getElementById('user-name').innerText = decoded.name || 'User   ';
+        document.getElementById('user-name').innerText = decoded.name || 'User ';
         document.getElementById('login-form').style.display = 'none';
         document.getElementById('registration-form').style.display = 'none';
         document.getElementById('forgot-password-form').style.display = 'none';
