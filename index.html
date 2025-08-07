@@ -3,71 +3,130 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Auth App</title>
+  <title>Stylish Auth UI</title>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <style>
+    :root {
+      --bg-main: #1e1b2e;
+      --bg-card: #2b223f;
+      --primary: #e94560;
+      --text-light: #f7f7f7;
+      --text-muted: #bbb;
+    }
+
     * {
       box-sizing: border-box;
     }
+
     body {
       margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: #fff;
-      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg-main);
+      color: var(--text-light);
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
+
     .container {
+      background: var(--bg-card);
+      padding: 40px 30px;
+      border-radius: 16px;
       width: 100%;
-      max-width: 400px;
-      background: #fff;
-      color: #333;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 15px 25px rgba(0,0,0,0.3);
+      max-width: 420px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
+
     h2 {
       text-align: center;
-      color: #2c5364;
+      color: var(--primary);
+      margin-bottom: 25px;
     }
+
     form {
       display: flex;
       flex-direction: column;
     }
-    input, button {
+
+    input {
       padding: 12px;
       margin: 10px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-    button {
-      background: #2c5364;
-      color: white;
       border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      background: #3a2e4d;
+      color: white;
+    }
+
+    .password-field {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 14px;
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 13px;
       cursor: pointer;
-      transition: 0.3s;
     }
+
+    button {
+      background: var(--primary);
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+
     button:hover {
-      background: #0f2027;
+      background: #c0324c;
     }
-    .screen {
-      display: none;
+
+    .link {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 15px;
     }
-    .screen.active {
-      display: block;
-    }
-    p a {
-      color: #2c5364;
+
+    .link a {
+      color: var(--text-muted);
       cursor: pointer;
       text-decoration: underline;
     }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .dashboard {
+      text-align: center;
+    }
+
+    .dashboard p {
+      margin: 20px 0;
+    }
+
     .actions {
       display: flex;
-      justify-content: space-between;
-      gap: 10px;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .actions button {
+      flex: 1;
     }
   </style>
 </head>
@@ -75,56 +134,52 @@
   <div class="container">
     <!-- LOGIN -->
     <section id="login" class="screen active">
-      <h2>Login</h2>
+      <h2>Sign In</h2>
       <form id="login-form">
         <input type="text" id="login-username" placeholder="Username" required />
-        <input type="password" id="login-password" placeholder="Password" required />
+        <div class="password-field">
+          <input type="password" id="login-password" placeholder="Password" required />
+          <button type="button" class="toggle-password" onclick="togglePassword('login-password', this)">Show</button>
+        </div>
         <button type="submit">Login</button>
-        <p><a onclick="switchScreen('forgot')">Forgot Password?</a></p>
-        <p>Don't have an account? <a onclick="switchScreen('register')">Register</a></p>
+        <div class="link"><a onclick="switchScreen('forgot')">Forgot Password?</a></div>
+        <div class="link">No account? <a onclick="switchScreen('register')">Register</a></div>
       </form>
     </section>
 
     <!-- REGISTER -->
     <section id="register" class="screen">
-      <h2>Register</h2>
+      <h2>Create Account</h2>
       <form id="register-form">
-        <input type="text" placeholder="Name" required />
+        <input type="text" placeholder="Full Name" required />
         <input type="email" placeholder="Email" required />
-        <input type="password" placeholder="Password" required />
+        <div class="password-field">
+          <input type="password" id="reg-password" placeholder="Password" required />
+          <button type="button" class="toggle-password" onclick="togglePassword('reg-password', this)">Show</button>
+        </div>
         <button type="submit">Register</button>
-        <p>Already have an account? <a onclick="switchScreen('login')">Login</a></p>
+        <div class="link"><a onclick="switchScreen('login')">Back to Login</a></div>
       </form>
     </section>
 
     <!-- FORGOT PASSWORD -->
     <section id="forgot" class="screen">
-      <h2>Forgot Password</h2>
+      <h2>Reset Password</h2>
       <form id="forgot-form">
         <input type="email" placeholder="Your Email" required />
-        <button type="submit">Send Reset Link</button>
-        <p><a onclick="switchScreen('login')">Back to Login</a></p>
-      </form>
-    </section>
-
-    <!-- CHANGE PASSWORD -->
-    <section id="change" class="screen">
-      <h2>Change Password</h2>
-      <form id="change-form">
-        <input type="password" placeholder="Old Password" required />
-        <input type="password" placeholder="New Password" required />
-        <button type="submit">Update Password</button>
-        <p><a onclick="switchScreen('dashboard')">Back</a></p>
+        <button type="submit">Send Link</button>
+        <div class="link"><a onclick="switchScreen('login')">Back to Login</a></div>
       </form>
     </section>
 
     <!-- DASHBOARD -->
     <section id="dashboard" class="screen">
       <h2>Welcome</h2>
-      <p id="user-info">Loading user info...</p>
-      <div class="actions">
-        <button onclick="switchScreen('change')">Change Password</button>
-        <button onclick="logout()">Logout</button>
+      <div class="dashboard">
+        <p id="user-info">Loading user...</p>
+        <div class="actions">
+          <button onclick="switchScreen('login'); logout()">Logout</button>
+        </div>
       </div>
     </section>
   </div>
@@ -138,7 +193,17 @@
     function logout() {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      switchScreen('login');
+    }
+
+    function togglePassword(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (input.type === "password") {
+        input.type = "text";
+        btn.textContent = "Hide";
+      } else {
+        input.type = "password";
+        btn.textContent = "Show";
+      }
     }
 
     document.getElementById("login-form").addEventListener("submit", async function (e) {
@@ -155,11 +220,11 @@
         const data = response.data;
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data));
-        document.getElementById("user-info").textContent = `Hello, ${data.firstName} ${data.lastName}`;
+        document.getElementById("user-info").textContent = `Welcome, ${data.firstName} ${data.lastName}!`;
         switchScreen("dashboard");
 
       } catch (error) {
-        alert(error.response?.data?.message || "Login failed.");
+        alert("Invalid credentials. Try username: 'kminchelle', password: '0lelplR'");
       }
     });
   </script>
