@@ -17,8 +17,20 @@ async function handleLogin(event) {
         localStorage.setItem('token', response.data.token); // Store the token
         showDashboard(); // Show the dashboard after successful login
     } catch (error) {
-        alert('Login failed: ' + (error.response?.data?.message || 'Unknown error'));
-        console.error('Login error:', error);
+        // Check if the error response exists
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            alert('Login failed: ' + (error.response.data.message || 'Unknown error'));
+            console.error('Error response:', error.response.data);
+        } else if (error.request) {
+            // The request was made but no response was received
+            alert('Login failed: No response from server.');
+            console.error('Error request:', error.request);
+        } else {
+            // Something happened in setting up the request that triggered an error
+            alert('Login failed: ' + error.message);
+            console.error('Error message:', error.message);
+        }
     }
 }
 
@@ -50,7 +62,7 @@ function showDashboard() {
     const token = localStorage.getItem('token');
     if (token) {
         const decoded = jwt_decode(token);
-        document.getElementById('user-name').innerText = decoded.name || 'User  ';
+        document.getElementById('user-name').innerText = decoded.name || 'User   ';
         document.getElementById('login-form').style.display = 'none';
         document.getElementById('registration-form').style.display = 'none';
         document.getElementById('forgot-password-form').style.display = 'none';
