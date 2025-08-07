@@ -1,57 +1,65 @@
-/* Add this to your existing styles.css at the bottom */
-
-/* Password toggle button inside input */
-.password-wrapper {
-  position: relative;
+* {
+    box-sizing: border-box;
 }
 
-.password-wrapper input {
-  width: 100%;
-  padding-right: 40px;
+body {
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: white;
+    margin: 0;
 }
 
-.password-wrapper button {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 18px;
+.form-container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    width: 300px;
+    text-align: center;
+    transition: transform 0.3s ease;
 }
 
-/* Theme toggle */
-.toggle-theme {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  color: white;
-  font-weight: bold;
+.form-container:hover {
+    transform: scale(1.05);
 }
 
-/* Dark Mode */
-body.dark {
-  background: #121212;
+h2 {
+    margin-bottom: 20px;
 }
 
-body.dark .container {
-  background: #1f1f1f;
-  color: white;
+input {
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+    outline: none;
 }
 
-body.dark label,
-body.dark h2 {
-  color: white;
+input::placeholder {
+    color: #ccc;
 }
 
-body.dark input,
-body.dark button {
-  background-color: #2a2a2a;
-  color: white;
-  border: 1px solid #555;
+button {
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
 }
 
-body.dark button:hover {
-  background-color: #444;
+button:hover {
+    background-color: #218838;
+}
+
+#user-name {
+    font-weight: bold;
 }
