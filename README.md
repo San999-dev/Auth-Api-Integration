@@ -1,27 +1,31 @@
 🔐 Static Token-Based Authentication (Frontend)
+
 📖 Overview
+
 This is a static web application that implements token-based authentication entirely in the frontend.
 It includes the following features:
 
-User Registration
+1.User Registration
 
-User Login
+2.User Login
 
-Forgot Password
+3.Forgot Password
 
-Change Password
+4.Change Password
 
-Dashboard / Welcome Screen
+5.Dashboard / Welcome Screen
 
-Token Storage and Validation
+6.Token Storage and Validation
 
 Logout
 
 The app uses a mock API implemented via localStorage for demonstration purposes, simulating real API authentication.
+
 A token is generated upon login, stored locally, and validated on every page load.
 
 🎯 Features
 Authentication Screens:
+
 Login – Enter credentials to authenticate.
 
 Register – Create a new user account.
@@ -35,14 +39,18 @@ Dashboard – View a personalized welcome message.
 Logout – Clear token and return to login.
 
 🔑 Token Format
+
 When a user logs in successfully, a JWT-like token is generated and stored in localStorage under the key authToken.
+
 📂 Project Structure
+
 index.html   → Main HTML file with all screens
 
 style.css    → Styling for the UI (can also be embedded in HTML)
 
 script.js     → Logic for authentication, token handling, and UI switching
-⚙️ How It Works 
+⚙️ How It Works
+
 Register
 
 User details are stored in browser’s localStorage.
