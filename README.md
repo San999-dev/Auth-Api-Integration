@@ -43,18 +43,12 @@ authenticated-website/
 ├── login.html
 └── welcome.html
 
-🔐 Token Format
+📌 Storage & Validation:
+The token is stored in localStorage after login.
 
-This app uses a standard JWT (JSON Web Token). The payload is decoded using:
-js
+On each page load, the token is decoded and checked:
 
-Copy
-Edit
+If expired → The user is logged out automatically.
 
-JSON.parse(atob(token.split('.')[1]))
+If valid → The user is redirected to the dashboard.
 
-
-
-User’s name or email is extracted from the token and displayed.
-
-The Logout button clears the token and redirects back to login.
