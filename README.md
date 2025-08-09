@@ -1,54 +1,98 @@
- Auth-Api-Integration
-This is a static web authentication interface that integrates with an external authentication API. It allows users to log in, decode their token, and view a personalized welcome screen. Built with HTML, CSS, and JavaScript, this project requires no backend setup.
+🔐 Static Token-Based Authentication (Frontend)
+📖 Overview
+This is a static web application that implements token-based authentication entirely in the frontend.
+It includes the following features:
 
-Project Features
+User Registration
 
-✅ Login form connected to external API
+User Login
 
-✅ JWT token handling (store, decode, and display user info)
+Forgot Password
 
-✅ Responsive, clean user interface
+Change Password
 
-✅ Logout functionality
+Dashboard / Welcome Screen
 
-✅ Built using only vanilla HTML, CSS, and JS
+Token Storage and Validation
 
-🔗 API Details
-Base URL:
+Logout
 
+The app uses a mock API implemented via localStorage for demonstration purposes, simulating real API authentication.
+A token is generated upon login, stored locally, and validated on every page load.
 
+🎯 Features
+Authentication Screens:
+Login – Enter credentials to authenticate.
 
-Login Endpoint:
+Register – Create a new user account.
 
-POST /auth/login
+Forgot Password – Recover password via registered email.
 
-🧪 How It Works
+Change Password – Update existing password.
 
-1.User enters email and password on the login page.
+Dashboard – View a personalized welcome message.
 
-2.On submit, the login form sends a POST request to the external API.
+Logout – Clear token and return to login.
 
-3.If authenticated, a JWT token is returned and stored in localStorage.
+🔑 Token Format
+When a user logs in successfully, a JWT-like token is generated and stored in localStorage under the key authToken.
+📂 Project Structure
+index.html   → Main HTML file with all screens
 
-4.User is redirected to welcome.html, where the token is decoded.
+style.css    → Styling for the UI (can also be embedded in HTML)
 
-📝 Folder Structure
+script.js     → Logic for authentication, token handling, and UI switching
+⚙️ How It Works 
+Register
 
-authenticated-website/
-├── css/
-│   └── styles.css
-├── js/
-│   ├── login.js
-│   └── welcome.js
-├── login.html
-└── welcome.html
+User details are stored in browser’s localStorage.
 
-📌 Storage & Validation:
-The token is stored in localStorage after login.
+Login
 
-On each page load, the token is decoded and checked:
+Credentials are verified against stored users.
 
-If expired → The user is logged out automatically.
+If valid, a token is generated
+Token is saved in localStorage.
 
-If valid → The user is redirected to the dashboard.
+Token Validation
+
+On page load, token is decoded.
+
+If token is valid and not expired → User is auto-logged in.
+
+If expired or invalid → User is logged out.
+
+Forgot Password
+
+Retrieves password for registered email (localStorage-based mock).
+
+Logout
+
+Clears token from localStorage and returns to login screen.
+
+🚀 Running the Project
+Clone or download the repository.
+
+Open index.html in your browser.
+
+No backend required – works fully in frontend.
+
+📌 Notes
+This project simulates token-based authentication.
+
+In a production environment, use a real backend API to generate and validate tokens securely.
+
+Never store sensitive information (like passwords) in plain text in localStorage in real applications.
+
+🖼 UI Features
+Responsive design
+
+Gradient background
+
+Show/Hide Password Toggle
+
+Clean and modern look
+
+Single-page multi-screen navigation
+
 
