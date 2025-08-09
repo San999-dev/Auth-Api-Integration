@@ -1,234 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Token-Based Auth App</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Token-Based Auth Demo</title>
 <style>
-  * { box-sizing: border-box; }
   body {
-    font-family: "Segoe UI", sans-serif;
-    margin: 0;
-    background: linear-gradient(135deg, #1d2671, #c33764);
-    color: #fff;
-    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(120deg, #6a11cb, #2575fc);
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 100vh;
+    margin: 0;
   }
   .container {
     background: #fff;
-    color: #333;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    width: 100%;
-    max-width: 420px;
+    padding: 25px;
+    border-radius: 12px;
+    width: 350px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
   }
   h2 {
     text-align: center;
-    color: #c33764;
+    color: #6a11cb;
   }
-  form {
-    display: flex;
-    flex-direction: column;
-  }
-  input, button {
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 8px;
+  input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 6px;
     border: 1px solid #ccc;
-    font-size: 16px;
   }
   button {
-    background: #c33764;
-    color: white;
+    width: 100%;
+    padding: 10px;
+    background: #6a11cb;
+    color: #fff;
     border: none;
+    border-radius: 6px;
     cursor: pointer;
-    transition: 0.3s;
+    font-size: 16px;
   }
   button:hover {
-    background: #9e2850;
+    background: #4b08a9;
   }
-  .screen { display: none; }
-  .screen.active { display: block; }
-  p a {
-    color: #c33764;
-    cursor: pointer;
-    text-decoration: underline;
+  .dashboard {
+    display: none;
   }
-  .toggle-password {
-    position: relative;
-  }
-  .toggle-password span {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    font-size: 14px;
-    color: #666;
+  .logout-btn {
+    background: crimson;
   }
 </style>
 </head>
 <body>
-<div class="container">
-  <!-- LOGIN -->
-  <section id="login" class="screen active">
-    <h2>Login</h2>
-    <form id="login-form">
-      <input type="text" id="login-email" placeholder="Email" required />
-      <div class="toggle-password">
-        <input type="password" id="login-password" placeholder="Password" required />
-        <span onclick="togglePassword('login-password', this)">Show</span>
-      </div>
-      <button type="submit">Login</button>
-      <p><a onclick="switchScreen('forgot')">Forgot Password?</a></p>
-      <p><a onclick="switchScreen('register')">Don't have an account? Register</a></p>
-    </form>
-  </section>
 
-  <!-- REGISTER -->
-  <section id="register" class="screen">
-    <h2>Register</h2>
-    <form id="register-form">
-      <input type="text" id="register-name" placeholder="Full Name" required />
-      <input type="email" id="register-email" placeholder="Email" required />
-      <div class="toggle-password">
-        <input type="password" id="register-password" placeholder="Password" required />
-        <span onclick="togglePassword('register-password', this)">Show</span>
-      </div>
-      <button type="submit">Register</button>
-      <p><a onclick="switchScreen('login')">Already have an account? Login</a></p>
-    </form>
-  </section>
+<div class="container" id="auth-container">
+  <h2>Login</h2>
+  <input type="text" id="username" placeholder="Username" value="kminchelle">
+  <input type="password" id="password" placeholder="Password" value="0lelplR">
+  <button onclick="login()">Login</button>
+</div>
 
-  <!-- FORGOT PASSWORD -->
-  <section id="forgot" class="screen">
-    <h2>Forgot Password</h2>
-    <form id="forgot-form">
-      <input type="email" id="forgot-email" placeholder="Enter your registered email" required />
-      <button type="submit">Recover Password</button>
-      <p><a onclick="switchScreen('login')">Back to Login</a></p>
-    </form>
-  </section>
-
-  <!-- DASHBOARD -->
-  <section id="dashboard" class="screen">
-    <h2>Welcome</h2>
-    <p id="user-info">Welcome back!</p>
-    <button onclick="logout()">Logout</button>
-  </section>
+<div class="container dashboard" id="dashboard">
+  <h2>Welcome</h2>
+  <p id="welcome-msg"></p>
+  <p><strong>Token:</strong> <span id="token"></span></p>
+  <button class="logout-btn" onclick="logout()">Logout</button>
 </div>
 
 <script>
-  const API_BASE = "https://os-project-server.vercel.app/api/auth"; // change to your API base URL
-
-  const switchScreen = (id) => {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-  };
-
-  const togglePassword = (inputId, toggleElem) => {
-    const input = document.getElementById(inputId);
-    if (input.type === "password") {
-      input.type = "text";
-      toggleElem.textContent = "Hide";
-    } else {
-      input.type = "password";
-      toggleElem.textContent = "Show";
-    }
-  };
-
-  // LOGIN
-  document.getElementById("login-form").addEventListener("submit", async function(e) {
-    e.preventDefault();
-    const email = document.getElementById("login-email").value;
-    const password = document.getElementById("login-password").value;
+  async function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
 
     try {
-      const res = await fetch(`${API_BASE}/login`, {
+      const res = await fetch("https://dummyjson.com/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ username, password })
       });
 
-      if (!res.ok) throw new Error("Invalid credentials");
+      if (!res.ok) {
+        alert("Invalid credentials");
+        return;
+      }
+
       const data = await res.json();
-
-      if (!data.token) throw new Error("Token not received");
-
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data));
 
-      // Decode JWT
-      const payload = JSON.parse(atob(data.token.split(".")[1]));
-      document.getElementById("user-info").textContent = `Hello, ${payload.name || payload.email}`;
-      switchScreen("dashboard");
+      showDashboard(data);
     } catch (err) {
-      alert(err.message);
+      console.error(err);
+      alert("Error connecting to API");
     }
-  });
+  }
 
-  // REGISTER
-  document.getElementById("register-form").addEventListener("submit", async function(e) {
-    e.preventDefault();
-    const name = document.getElementById("register-name").value;
-    const email = document.getElementById("register-email").value;
-    const password = document.getElementById("register-password").value;
+  function showDashboard(userData) {
+    document.getElementById("auth-container").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+    document.getElementById("welcome-msg").textContent = `Hello, ${userData.firstName} ${userData.lastName}`;
+    document.getElementById("token").textContent = userData.token;
+  }
 
-    try {
-      const res = await fetch(`${API_BASE}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password })
-      });
-
-      if (!res.ok) throw new Error("Registration failed");
-      alert("Registration successful! Please login.");
-      switchScreen("login");
-    } catch (err) {
-      alert(err.message);
-    }
-  });
-
-  // FORGOT PASSWORD
-  document.getElementById("forgot-form").addEventListener("submit", async function(e) {
-    e.preventDefault();
-    const email = document.getElementById("forgot-email").value;
-
-    try {
-      const res = await fetch(`${API_BASE}/forgot-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email })
-      });
-
-      if (!res.ok) throw new Error("Email not found");
-      alert("Password reset instructions sent to your email.");
-      switchScreen("login");
-    } catch (err) {
-      alert(err.message);
-    }
-  });
-
-  const logout = () => {
+  function logout() {
     localStorage.removeItem("token");
-    switchScreen("login");
-  };
+    localStorage.removeItem("user");
+    document.getElementById("auth-container").style.display = "block";
+    document.getElementById("dashboard").style.display = "none";
+  }
 
   // Auto-login if token exists
   window.onload = () => {
     const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        document.getElementById("user-info").textContent = `Hello, ${payload.name || payload.email}`;
-        switchScreen("dashboard");
-      } catch (err) {
-        localStorage.removeItem("token");
-      }
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (token && user) {
+      showDashboard(user);
     }
   };
 </script>
+
 </body>
 </html>
