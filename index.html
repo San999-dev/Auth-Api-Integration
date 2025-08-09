@@ -1,233 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Auth App (LocalStorage)</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(to right, #6a11cb, #2575fc);
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .container {
-      width: 100%;
-      max-width: 400px;
-      background: #fff;
-      color: #333;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
-    h2 {
-      text-align: center;
-      color: #6a11cb;
-    }
-    form {
-      display: flex;
-      flex-direction: column;
-    }
-    input, button {
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-    button {
-      background: #6a11cb;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover {
-      background: #4b08a9;
-    }
-    .screen {
-      display: none;
-    }
-    .screen.active {
-      display: block;
-    }
-    p a {
-      color: #6a11cb;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-    .toggle-password {
-      position: relative;
-    }
-    .toggle-password input {
-      width: 100%;
-    }
-    .toggle-password span {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      font-size: 14px;
-      color: #666;
-    }
-    .actions {
-      display: flex;
-      justify-content: space-between;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Auth App with Token</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  .container {
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    color: #333;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  h2 {
+    text-align: center;
+    color: #00b09b;
+    margin-bottom: 20px;
+  }
+  form { display: flex; flex-direction: column; }
+  input, button {
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+  }
+  button {
+    background: #00b09b;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  button:hover { background: #019281; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+  p a { color: #00b09b; cursor: pointer; text-decoration: underline; }
+  .toggle-password { position: relative; }
+  .toggle-password span {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+  }
+  .actions { display: flex; justify-content: space-between; }
+</style>
 </head>
 <body>
-  <div class="container">
-    <!-- LOGIN -->
-    <section id="login" class="screen active">
-      <h2>Login</h2>
-      <form id="login-form">
-        <input type="text" id="login-email" placeholder="Email" required />
-        <div class="toggle-password">
-          <input type="password" id="login-password" placeholder="Password" required />
-          <span onclick="togglePassword('login-password', this)">Show</span>
-        </div>
-        <button type="submit">Login</button>
-        <p><a onclick="switchScreen('forgot')">Forgot Password?</a></p>
-        <p><a onclick="switchScreen('register')">Don't have an account? Register</a></p>
-      </form>
-    </section>
-
-    <!-- REGISTER -->
-    <section id="register" class="screen">
-      <h2>Register</h2>
-      <form id="register-form">
-        <input type="text" id="register-name" placeholder="Full Name" required />
-        <input type="email" id="register-email" placeholder="Email" required />
-        <div class="toggle-password">
-          <input type="password" id="register-password" placeholder="Password" required />
-          <span onclick="togglePassword('register-password', this)">Show</span>
-        </div>
-        <button type="submit">Register</button>
-        <p><a onclick="switchScreen('login')">Already have an account? Login</a></p>
-      </form>
-    </section>
-
-    <!-- FORGOT PASSWORD -->
-    <section id="forgot" class="screen">
-      <h2>Forgot Password</h2>
-      <form id="forgot-form">
-        <input type="email" id="forgot-email" placeholder="Enter your registered email" required />
-        <button type="submit">Recover Password</button>
-        <p><a onclick="switchScreen('login')">Back to Login</a></p>
-      </form>
-    </section>
-
-    <!-- DASHBOARD -->
-    <section id="dashboard" class="screen">
-      <h2>Welcome</h2>
-      <p id="user-info">Welcome back!</p>
-      <div class="actions">
-        <button onclick="logout()">Logout</button>
+<div class="container">
+  <!-- LOGIN -->
+  <section id="login" class="screen active">
+    <h2>Login</h2>
+    <form id="login-form">
+      <input type="text" id="login-username" placeholder="Username" required />
+      <div class="toggle-password">
+        <input type="password" id="login-password" placeholder="Password" required />
+        <span onclick="togglePassword('login-password', this)">Show</span>
       </div>
-    </section>
-  </div>
+      <button type="submit">Login</button>
+      <p><a onclick="switchScreen('forgot')">Forgot Password?</a></p>
+    </form>
+  </section>
 
-  <script>
-    const switchScreen = (id) => {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    };
+  <!-- FORGOT PASSWORD -->
+  <section id="forgot" class="screen">
+    <h2>Forgot Password</h2>
+    <form id="forgot-form">
+      <input type="email" id="forgot-email" placeholder="Enter your email" required />
+      <button type="submit">Recover Password</button>
+      <p><a onclick="switchScreen('login')">Back to Login</a></p>
+    </form>
+  </section>
 
-    const togglePassword = (inputId, toggleElem) => {
-      const input = document.getElementById(inputId);
-      if (input.type === "password") {
-        input.type = "text";
-        toggleElem.textContent = "Hide";
-      } else {
-        input.type = "password";
-        toggleElem.textContent = "Show";
-      }
-    };
+  <!-- DASHBOARD -->
+  <section id="dashboard" class="screen">
+    <h2>Welcome</h2>
+    <p id="user-info">Loading...</p>
+    <div class="actions">
+      <button onclick="logout()">Logout</button>
+    </div>
+  </section>
+</div>
 
-    const getUsers = () => JSON.parse(localStorage.getItem("users")) || [];
+<script>
+  const switchScreen = (id) => {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  };
 
-    const saveUser = (user) => {
-      const users = getUsers();
-      users.push(user);
-      localStorage.setItem("users", JSON.stringify(users));
-    };
+  const togglePassword = (inputId, toggleElem) => {
+    const input = document.getElementById(inputId);
+    if (input.type === "password") {
+      input.type = "text";
+      toggleElem.textContent = "Hide";
+    } else {
+      input.type = "password";
+      toggleElem.textContent = "Show";
+    }
+  };
 
-    const findUser = (email, password) => {
-      const users = getUsers();
-      return users.find(u => u.email === email && u.password === password);
-    };
+  // Login with API
+  document.getElementById("login-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const username = document.getElementById("login-username").value;
+    const password = document.getElementById("login-password").value;
 
-    const findUserByEmail = (email) => {
-      const users = getUsers();
-      return users.find(u => u.email === email);
-    };
+    try {
+      const res = await fetch("https://dummyjson.com/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
 
-    // Register
-    document.getElementById("register-form").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const name = document.getElementById("register-name").value;
-      const email = document.getElementById("register-email").value;
-      const password = document.getElementById("register-password").value;
+      const data = await res.json();
 
-      const existing = getUsers().some(u => u.email === email);
-      if (existing) return alert("Email already registered");
-
-      saveUser({ name, email, password });
-      alert("Registration successful! You can now login.");
-      switchScreen("login");
-    });
-
-    // Login
-    document.getElementById("login-form").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const email = document.getElementById("login-email").value;
-      const password = document.getElementById("login-password").value;
-
-      const user = findUser(email, password);
-      if (!user) {
-        alert("Invalid credentials");
-      } else {
-        localStorage.setItem("currentUser", JSON.stringify(user));
-        document.getElementById("user-info").textContent = `Hello, ${user.name}`;
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data));
+        document.getElementById("user-info").textContent = `Hello, ${data.firstName} ${data.lastName}`;
         switchScreen("dashboard");
-      }
-    });
-
-    // Forgot Password
-    document.getElementById("forgot-form").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const email = document.getElementById("forgot-email").value;
-      const user = findUserByEmail(email);
-      if (!user) {
-        alert("No account found with this email.");
       } else {
-        alert(`Your password is: ${user.password}`);
-        switchScreen("login");
+        alert(data.message || "Invalid credentials");
       }
-    });
+    } catch (err) {
+      console.error(err);
+      alert("Error logging in");
+    }
+  });
 
-    const logout = () => {
-      localStorage.removeItem("currentUser");
-      switchScreen("login");
-    };
+  // Forgot password (dummy)
+  document.getElementById("forgot-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+    alert("Password reset link sent to your email (demo only)");
+    switchScreen("login");
+  });
 
-    // Auto-login
-    window.onload = () => {
-      const user = JSON.parse(localStorage.getItem("currentUser"));
-      if (user) {
-        document.getElementById("user-info").textContent = `Hello, ${user.name}`;
-        switchScreen("dashboard");
-      }
-    };
-  </script>
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    switchScreen("login");
+  };
+
+  // Auto login if token exists
+  window.onload = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      document.getElementById("user-info").textContent = `Hello, ${user.firstName} ${user.lastName}`;
+      switchScreen("dashboard");
+    }
+  };
+</script>
 </body>
 </html>
