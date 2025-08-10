@@ -1,222 +1,165 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Auth App (Token-Based, Mock API)</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Token Auth Demo (Frontend)</title>
   <style>
-    body {
-      margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(120deg, #ff7e5f, #feb47b);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-    .container {
-      background: #fff;
-      padding: 25px;
-      border-radius: 15px;
-      max-width: 400px;
-      width: 100%;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
-    h2 {
-      text-align: center;
-      color: #ff7e5f;
-    }
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      font-size: 15px;
-    }
-    button {
-      background: #ff7e5f;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button:hover {
-      background: #e96b50;
-    }
-    .screen { display: none; }
-    .screen.active { display: block; }
-    .link {
-      color: #ff7e5f;
-      cursor: pointer;
-      text-align: center;
-      display: block;
-      margin-top: 5px;
-    }
-    .toggle-password {
-      position: relative;
-    }
-    .toggle-password span {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      font-size: 13px;
-      color: #555;
-    }
+    body{font-family:Segoe UI,Arial;background:#f4f6fb;margin:0;display:flex;align-items:center;justify-content:center;height:100vh}
+    .card{background:white;padding:24px;border-radius:12px;box-shadow:0 8px 30px rgba(20,30,70,0.08);width:360px}
+    h1{margin:0 0 12px;font-size:20px;color:#243b55}
+    input{width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #e5e8ef}
+    button{width:100%;padding:10px;border-radius:8px;border:none;background:#2b6cb0;color:white;font-weight:600;cursor:pointer}
+    .link{display:block;text-align:center;margin-top:10px;color:#2b6cb0;cursor:pointer}
+    .small{font-size:13px;color:#7b8794;text-align:center;margin-top:8px}
+    pre{white-space:break-spaces;word-break:break-all;background:#f0f4ff;padding:10px;border-radius:8px;font-size:12px}
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="card">
+    <div id="screen-login">
+      <h1>Sign in</h1>
+      <input id="login-email" placeholder="Email" />
+      <input id="login-password" type="password" placeholder="Password" />
+      <button id="btn-login">Login</button>
+      <div class="link" id="goto-register">Create account</div>
+      <div class="link" id="goto-forgot">Forgot password</div>
+      <div class="small">Test user: <strong>test@example.com / 123456</strong></div>
+    </div>
 
-    <!-- LOGIN -->
-    <div id="login" class="screen active">
-      <h2>Login</h2>
-      <input type="text" id="login-email" placeholder="Email" required />
-      <div class="toggle-password">
-        <input type="password" id="login-password" placeholder="Password" required />
-        <span onclick="togglePassword('login-password', this)">Show</span>
+    <div id="screen-register" style="display:none">
+      <h1>Create account</h1>
+      <input id="register-name" placeholder="Full name" />
+      <input id="register-email" placeholder="Email" />
+      <input id="register-password" type="password" placeholder="Password" />
+      <button id="btn-register">Register</button>
+      <div class="link" id="goto-login-1">Back to login</div>
+    </div>
+
+    <div id="screen-forgot" style="display:none">
+      <h1>Recover password</h1>
+      <input id="forgot-email" placeholder="Registered email" />
+      <button id="btn-forgot">Send reset (demo)</button>
+      <div class="link" id="goto-login-2">Back to login</div>
+    </div>
+
+    <div id="screen-dashboard" style="display:none">
+      <h1>Dashboard</h1>
+      <div id="welcome"></div>
+      <div style="margin:10px 0"><strong>Token (stored in localStorage):</strong>
+        <pre id="token-box"></pre>
       </div>
-      <button onclick="login()">Login</button>
-      <span class="link" onclick="switchScreen('register')">Register</span>
-      <span class="link" onclick="switchScreen('forgot')">Forgot Password?</span>
+      <button id="btn-me">Fetch /api/auth/me (protected)</button>
+      <button id="btn-logout" style="margin-top:8px;background:#e53e3e">Logout</button>
+      <div class="small">Open console for more network details</div>
     </div>
-
-    <!-- REGISTER -->
-    <div id="register" class="screen">
-      <h2>Register</h2>
-      <input type="text" id="register-name" placeholder="Name" required />
-      <input type="text" id="register-email" placeholder="Email" required />
-      <div class="toggle-password">
-        <input type="password" id="register-password" placeholder="Password" required />
-        <span onclick="togglePassword('register-password', this)">Show</span>
-      </div>
-      <button onclick="register()">Register</button>
-      <span class="link" onclick="switchScreen('login')">Back to Login</span>
-    </div>
-
-    <!-- FORGOT -->
-    <div id="forgot" class="screen">
-      <h2>Recover Password</h2>
-      <input type="text" id="forgot-email" placeholder="Enter Email" required />
-      <button onclick="recoverPassword()">Recover</button>
-      <span class="link" onclick="switchScreen('login')">Back to Login</span>
-    </div>
-
-    <!-- DASHBOARD -->
-    <div id="dashboard" class="screen">
-      <h2>Welcome</h2>
-      <p id="user-info"></p>
-      <button onclick="logout()">Logout</button>
-    </div>
-
   </div>
 
-  <script>
-    // Mock "API" in localStorage
-    const getUsers = () => JSON.parse(localStorage.getItem("users")) || [];
-    const saveUsers = (users) => localStorage.setItem("users", JSON.stringify(users));
+<script>
+const API_BASE = (location.hostname === "localhost") ? "http://localhost:5000" : "https://YOUR_DEPLOYED_BACKEND_URL"; 
+// Replace "https://YOUR_DEPLOYED_BACKEND_URL" with your real backend URL after deployment
 
-    function generateToken(email) {
-      // Fake JWT: header.payload.signature (Base64 encoded)
-      const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-      const payload = btoa(JSON.stringify({ email, exp: Date.now() + 3600000 }));
-      const signature = btoa("secretKey");
-      return `${header}.${payload}.${signature}`;
+// helper
+const $ = id => document.getElementById(id);
+const show = id => {
+  ["screen-login","screen-register","screen-forgot","screen-dashboard"].forEach(s=>$(s).style.display=(s===id?"block":"none"));
+};
+
+// navigation
+$("goto-register").addEventListener("click", ()=>show("screen-register"));
+$("goto-login-1").addEventListener("click", ()=>show("screen-login"));
+$("goto-login-2").addEventListener("click", ()=>show("screen-login"));
+$("goto-forgot").addEventListener("click", ()=>show("screen-forgot"));
+
+// register
+$("btn-register").addEventListener("click", async () => {
+  const name = $("register-name").value.trim();
+  const email = $("register-email").value.trim();
+  const password = $("register-password").value;
+  if(!name||!email||!password){ alert("Fill all fields"); return; }
+
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/register`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ name, email, password })
+    });
+    if(res.ok){
+      alert("Registered. Please login");
+      show("screen-login");
+    } else {
+      const err = await res.json();
+      alert(err.message || "Registration failed");
     }
+  } catch(e){
+    alert("Network error: " + e.message);
+  }
+});
 
-    function decodeToken(token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        return payload;
-      } catch {
-        return null;
-      }
-    }
+// login
+$("btn-login").addEventListener("click", async () => {
+  const email = $("login-email").value.trim();
+  const password = $("login-password").value;
+  if(!email||!password){ alert("Fill all fields"); return; }
 
-    // UI helpers
-    function switchScreen(id) {
-      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
-    }
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/login`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if(!res.ok){ alert(data.message || "Login failed"); return; }
 
-    function togglePassword(id, elem) {
-      const input = document.getElementById(id);
-      if (input.type === "password") {
-        input.type = "text";
-        elem.textContent = "Hide";
-      } else {
-        input.type = "password";
-        elem.textContent = "Show";
-      }
-    }
+    // store token
+    localStorage.setItem("token", data.token);
+    $("token-box").textContent = data.token;
+    // decode JWT payload
+    const payload = JSON.parse(atob(data.token.split(".")[1]));
+    $("welcome").textContent = `Hello, ${payload.name} (${payload.email})`;
+    show("screen-dashboard");
+  } catch(e){
+    alert("Network error: " + e.message);
+  }
+});
 
-    // Auth functions
-    function register() {
-      const name = document.getElementById("register-name").value.trim();
-      const email = document.getElementById("register-email").value.trim();
-      const password = document.getElementById("register-password").value;
+// protected endpoint: /me
+$("btn-me").addEventListener("click", async () => {
+  const token = localStorage.getItem("token");
+  if(!token){ alert("Not logged in"); return; }
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/me`, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    const data = await res.json();
+    if(!res.ok){ alert(data.message || "Failed"); return; }
+    alert("Protected data: " + JSON.stringify(data));
+  } catch(e){
+    alert("Network error: " + e.message);
+  }
+});
 
-      const users = getUsers();
-      if (users.find(u => u.email === email)) {
-        alert("Email already registered");
-        return;
-      }
-      users.push({ name, email, password });
-      saveUsers(users);
-      alert("Registration successful!");
-      switchScreen("login");
-    }
+// logout
+$("btn-logout").addEventListener("click", () => {
+  localStorage.removeItem("token");
+  $("token-box").textContent = "";
+  show("screen-login");
+});
 
-    function login() {
-      const email = document.getElementById("login-email").value.trim();
-      const password = document.getElementById("login-password").value;
+// forgot (demo)
+$("btn-forgot").addEventListener("click", () => alert("Demo: server-side email flow not implemented"));
 
-      const users = getUsers();
-      const user = users.find(u => u.email === email && u.password === password);
-      if (!user) {
-        alert("Invalid credentials");
-        return;
-      }
-      const token = generateToken(user.email);
-      localStorage.setItem("authToken", token);
-      document.getElementById("user-info").textContent = `Hello, ${user.name}`;
-      switchScreen("dashboard");
-    }
-
-    function recoverPassword() {
-      const email = document.getElementById("forgot-email").value.trim();
-      const user = getUsers().find(u => u.email === email);
-      if (!user) {
-        alert("No account found");
-        return;
-      }
-      alert(`Your password is: ${user.password}`);
-      switchScreen("login");
-    }
-
-    function logout() {
-      localStorage.removeItem("authToken");
-      switchScreen("login");
-    }
-
-    // Auto-login if token valid
-    window.onload = () => {
-      const token = localStorage.getItem("authToken");
-      if (token) {
-        const payload = decodeToken(token);
-        if (payload && payload.exp > Date.now()) {
-          const user = getUsers().find(u => u.email === payload.email);
-          if (user) {
-            document.getElementById("user-info").textContent = `Hello, ${user.name}`;
-            switchScreen("dashboard");
-            return;
-          }
-        }
-        localStorage.removeItem("authToken");
-      }
-    };
-  </script>
+window.addEventListener("load", ()=>{
+  const token = localStorage.getItem("token");
+  if(token){
+    try{
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      $("token-box").textContent = token;
+      $("welcome").textContent = `Hello, ${payload.name} (${payload.email})`;
+      show("screen-dashboard");
+      return;
+    }catch(e){}
+    localStorage.removeItem("token");
+  }
+});
+</script>
 </body>
 </html>
