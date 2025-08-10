@@ -1,11 +1,12 @@
 {
-  "name": "token-auth-app",
+  "name": "token-auth-vercel",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Simple token-based authentication app for Vercel",
+  "main": "api/auth.js",
   "scripts": {
     "start": "vercel dev"
   },
   "dependencies": {
-    "jsonwebtoken": "^9.0.0"
+    "jsonwebtoken": "^9.0.2"
   }
 }
