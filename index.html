@@ -1,165 +1,95 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Token Auth Demo (Frontend)</title>
+  <meta charset="UTF-8">
+  <title>Token Auth App</title>
   <style>
-    body{font-family:Segoe UI,Arial;background:#f4f6fb;margin:0;display:flex;align-items:center;justify-content:center;height:100vh}
-    .card{background:white;padding:24px;border-radius:12px;box-shadow:0 8px 30px rgba(20,30,70,0.08);width:360px}
-    h1{margin:0 0 12px;font-size:20px;color:#243b55}
-    input{width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #e5e8ef}
-    button{width:100%;padding:10px;border-radius:8px;border:none;background:#2b6cb0;color:white;font-weight:600;cursor:pointer}
-    .link{display:block;text-align:center;margin-top:10px;color:#2b6cb0;cursor:pointer}
-    .small{font-size:13px;color:#7b8794;text-align:center;margin-top:8px}
-    pre{white-space:break-spaces;word-break:break-all;background:#f0f4ff;padding:10px;border-radius:8px;font-size:12px}
+    body { font-family: Arial; background: #f3f4f6; padding: 20px; }
+    .card { background: white; padding: 20px; border-radius: 10px; width: 300px; margin: auto; }
+    input, button { width: 100%; padding: 10px; margin: 5px 0; }
+    button { background: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div id="screen-login">
-      <h1>Sign in</h1>
-      <input id="login-email" placeholder="Email" />
-      <input id="login-password" type="password" placeholder="Password" />
-      <button id="btn-login">Login</button>
-      <div class="link" id="goto-register">Create account</div>
-      <div class="link" id="goto-forgot">Forgot password</div>
-      <div class="small">Test user: <strong>test@example.com / 123456</strong></div>
-    </div>
 
-    <div id="screen-register" style="display:none">
-      <h1>Create account</h1>
-      <input id="register-name" placeholder="Full name" />
-      <input id="register-email" placeholder="Email" />
-      <input id="register-password" type="password" placeholder="Password" />
-      <button id="btn-register">Register</button>
-      <div class="link" id="goto-login-1">Back to login</div>
-    </div>
+<div class="card" id="auth-card">
+  <h2>Login</h2>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <button onclick="register()">Register</button>
+</div>
 
-    <div id="screen-forgot" style="display:none">
-      <h1>Recover password</h1>
-      <input id="forgot-email" placeholder="Registered email" />
-      <button id="btn-forgot">Send reset (demo)</button>
-      <div class="link" id="goto-login-2">Back to login</div>
-    </div>
-
-    <div id="screen-dashboard" style="display:none">
-      <h1>Dashboard</h1>
-      <div id="welcome"></div>
-      <div style="margin:10px 0"><strong>Token (stored in localStorage):</strong>
-        <pre id="token-box"></pre>
-      </div>
-      <button id="btn-me">Fetch /api/auth/me (protected)</button>
-      <button id="btn-logout" style="margin-top:8px;background:#e53e3e">Logout</button>
-      <div class="small">Open console for more network details</div>
-    </div>
-  </div>
+<div class="card" id="dashboard" style="display:none;">
+  <h2>Welcome</h2>
+  <p id="user-info"></p>
+  <button onclick="logout()">Logout</button>
+</div>
 
 <script>
-const API_BASE = (location.hostname === "localhost") ? "http://localhost:5000" : "https://YOUR_DEPLOYED_BACKEND_URL"; 
-// Replace "https://YOUR_DEPLOYED_BACKEND_URL" with your real backend URL after deployment
+  // Change this to your actual backend API URL
+  const API_URL = "https://your-backend-url/api";
 
-// helper
-const $ = id => document.getElementById(id);
-const show = id => {
-  ["screen-login","screen-register","screen-forgot","screen-dashboard"].forEach(s=>$(s).style.display=(s===id?"block":"none"));
-};
-
-// navigation
-$("goto-register").addEventListener("click", ()=>show("screen-register"));
-$("goto-login-1").addEventListener("click", ()=>show("screen-login"));
-$("goto-login-2").addEventListener("click", ()=>show("screen-login"));
-$("goto-forgot").addEventListener("click", ()=>show("screen-forgot"));
-
-// register
-$("btn-register").addEventListener("click", async () => {
-  const name = $("register-name").value.trim();
-  const email = $("register-email").value.trim();
-  const password = $("register-password").value;
-  if(!name||!email||!password){ alert("Fill all fields"); return; }
-
-  try {
-    const res = await fetch(`${API_BASE}/api/auth/register`, {
-      method:"POST", headers:{"Content-Type":"application/json"},
+  async function register() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const name = prompt("Enter your name:");
+    const res = await fetch(`${API_URL}/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password })
     });
-    if(res.ok){
-      alert("Registered. Please login");
-      show("screen-login");
+    const data = await res.json();
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      showDashboard(data.token);
     } else {
-      const err = await res.json();
-      alert(err.message || "Registration failed");
+      alert(data.message);
     }
-  } catch(e){
-    alert("Network error: " + e.message);
   }
-});
 
-// login
-$("btn-login").addEventListener("click", async () => {
-  const email = $("login-email").value.trim();
-  const password = $("login-password").value;
-  if(!email||!password){ alert("Fill all fields"); return; }
-
-  try {
-    const res = await fetch(`${API_BASE}/api/auth/login`, {
-      method:"POST", headers:{"Content-Type":"application/json"},
+  async function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const res = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
     });
     const data = await res.json();
-    if(!res.ok){ alert(data.message || "Login failed"); return; }
-
-    // store token
-    localStorage.setItem("token", data.token);
-    $("token-box").textContent = data.token;
-    // decode JWT payload
-    const payload = JSON.parse(atob(data.token.split(".")[1]));
-    $("welcome").textContent = `Hello, ${payload.name} (${payload.email})`;
-    show("screen-dashboard");
-  } catch(e){
-    alert("Network error: " + e.message);
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      showDashboard(data.token);
+    } else {
+      alert(data.message);
+    }
   }
-});
 
-// protected endpoint: /me
-$("btn-me").addEventListener("click", async () => {
-  const token = localStorage.getItem("token");
-  if(!token){ alert("Not logged in"); return; }
-  try {
-    const res = await fetch(`${API_BASE}/api/auth/me`, {
-      headers: { "Authorization": "Bearer " + token }
+  async function showDashboard(token) {
+    const res = await fetch(`${API_URL}/profile`, {
+      headers: { "Authorization": `Bearer ${token}` }
     });
     const data = await res.json();
-    if(!res.ok){ alert(data.message || "Failed"); return; }
-    alert("Protected data: " + JSON.stringify(data));
-  } catch(e){
-    alert("Network error: " + e.message);
+    if (data.user) {
+      document.getElementById("auth-card").style.display = "none";
+      document.getElementById("dashboard").style.display = "block";
+      document.getElementById("user-info").innerText = `Hello, ${data.user.name}`;
+    } else {
+      logout();
+    }
   }
-});
 
-// logout
-$("btn-logout").addEventListener("click", () => {
-  localStorage.removeItem("token");
-  $("token-box").textContent = "";
-  show("screen-login");
-});
-
-// forgot (demo)
-$("btn-forgot").addEventListener("click", () => alert("Demo: server-side email flow not implemented"));
-
-window.addEventListener("load", ()=>{
-  const token = localStorage.getItem("token");
-  if(token){
-    try{
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      $("token-box").textContent = token;
-      $("welcome").textContent = `Hello, ${payload.name} (${payload.email})`;
-      show("screen-dashboard");
-      return;
-    }catch(e){}
+  function logout() {
     localStorage.removeItem("token");
+    document.getElementById("auth-card").style.display = "block";
+    document.getElementById("dashboard").style.display = "none";
   }
-});
+
+  window.onload = () => {
+    const token = localStorage.getItem("token");
+    if (token) showDashboard(token);
+  };
 </script>
 </body>
 </html>
